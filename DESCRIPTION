@@ -1,9 +1,14 @@
 Package: lab5
 Type: Package
-Title: What the package does (short line)
+Title: This packkage Imports Data from Swedish parliment open data API and create a database of it
 Version: 1.0
 Date: 2019-09-30
-Author: Who wrote it
-Maintainer: Who to complain to <yourfault@somewhere.net>
-Description: More about what it does (maybe more than one line)
-License: What license is it under?
+Author: Mahmood Siddique
+Maintainer: Who to complain to <mahmood1s@gmail.com>
+Description: This package gets data from API in in two formates, person and its appointments data is in 
+            XML fortmat and voting of each person for any proposed law in CSV formate. it parse both 
+            datasets into data frames and insert into database.
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 6.1.1

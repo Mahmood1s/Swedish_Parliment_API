@@ -1,21 +1,66 @@
-required_packages<-function(){
-  
-  install.packages("httr")
-  install.packages("dplyr")
-  install.packages("dbplyr")
-  require("httr")
-  require("XML")
-  require("methods")
-  
-  require(dplyr)
-  require(dbplyr)
-  require(RSQLite)
-}
+##' @name APIpackage
+##' @aliases required_packages
+##' @aliases create_database
+##' @aliases data_fetch
+##'
+##' @title API to get data from Swedish Parliment open Data site
+##'   
+##' @rdname APIpackage
+##' @return  it will fetch the data from API URL, parse it according the requirement and send to create_database function to insert into database
+##' @examples
+##' \dontrun{
+##' data_fetch()
+##' }
+##'
+##' @rdname required_packages
+##' @return  installs required packages for this package
+##' @examples
+##' \dontrun{
+##' install.packages("httr")
+##' install.packages("dplyr")
+##' }
+##'
+##' @rdname create_database
+##' @return  it is create the database and insert the data passed as arguments into tables
+##' @param appointment member appointments
+##' @param person_data_frame member information
+##' @param csv_file voting information of members
+##' @examples
+##' \dontrun{
+##' create_database(appointment,person_data_frame,csv_file)
+##' }
+
+
+  # if(requireNamespace("httr",quietly = TRUE))
+  # {
+  #   install.packages("httr")
+  #   require("httr")
+  # }
+  # if(requireNamespace("dplyr",quietly = TRUE)){
+  #   install.packages("dplyr")  
+  #   require(dplyr)
+  # }
+  # 
+  # if(requireNamespace("dbplyr",quietly = TRUE)){
+  #   install.packages("dbplyr")  
+  #   require(dbplyr)
+  # }
+  # 
+  # if(requireNamespace("XML",quietly = TRUE)){
+  #   install.packages("XML")
+  #   require("XML")
+  # }
+  # if(requireNamespace("methods",quietly = TRUE)){
+  #   require("methods")
+  # }
+  # if(requireNamespace("RSQLite",quietly = TRUE)){
+  #   require(RSQLite)
+  # }
 
 create_database<-function(appointment,person_data_frame,csv_file){
   
-  my_db_file<-"~/R Packages/lab5/Data/parliment_database.sqlite"
-  my_database = dbConnect(SQLite(), dbname=my_db_file)
+  my_db_file<-"~/R Packages/lab5/DatabaseDir/parliment_database.sqlite"
+  my_database = dbConnect(SQLite(), dbname=my_db_file)  
 #  dbSendQuery(conn=my_database,
 #              "CREATE TABLE members(
 #                intressent_id TEXT,
@@ -64,7 +109,7 @@ create_database<-function(appointment,person_data_frame,csv_file){
 
 data_fetch<-function(){
   
-required_packages()
+
 api_address<-"http://data.riksdagen.se/personlista/?iid=&fnamn=&enamn=&f_ar=&kn=&parti=&valkrets=&rdlstatus=samtliga&org=&utformat=xml&sort=sorteringsnamn&sortorder=asc&termlista="
 
 
@@ -72,8 +117,8 @@ get_xml<-GET(api_address)
 
 xml_content<- content(get_xml)
 
-content_data<-XML::xmlParse(xml_content)
-content_xml <- XML::getNodeSet(content_data,"/personlista", fun=XML::xmlToDataFrame)
+content_data<-xmlParse(xml_content)
+content_xml <- getNodeSet(content_data,"/personlista", fun=xmlToDataFrame)
 content_data_frame <- data.frame(do.call(rbind, content_xml))
 person_data_frame <- data.frame(content_data_frame["intressent_id"],content_data_frame["efternamn"],content_data_frame["tilltalsnamn"],content_data_frame["parti"],content_data_frame["kon"],content_data_frame["valkrets"],content_data_frame["fodd_ar"],content_data_frame["status"])
 person_data_frame <- person_data_frame[!person_data_frame$intressent_id %in% "",]
@@ -81,19 +126,19 @@ person_data_frame <- person_data_frame[!person_data_frame$intressent_id %in% "",
 # saving person data frame
 #save(person_data_frame,file = "~/R Packages/lab5/Data/person.Rda")
 
-xml_1 <- XML::xmlInternalTreeParse(xml_content,useInternalNodes=TRUE)
+xml_1 <- xmlInternalTreeParse(xml_content,useInternalNodes=TRUE)
 tags  <- xml_1["//personlista/person/personuppdrag/uppdrag"]
 appoint <- do.call(rbind,
                   lapply(tags,function(uppdrag)
                     {
-                     # if(as.numeric(XML::xmlValue(uppdrag["intressent_id"][[1]]))==0640627133410)
+                     # if(as.numeric(xmlValue(uppdrag["intressent_id"][[1]]))==0640627133410)
                       {
-                        intressent <- XML::xmlValue(uppdrag["intressent_id"][[1]])
-                        uppgift  <- XML::xmlValue(uppdrag["uppgift"][[1]])
-                        roll_kod  <- XML::xmlValue(uppdrag["roll_kod"][[1]])
-                        status <- XML::xmlValue(uppdrag["status"][[1]])
-                        from <- XML::xmlValue(uppdrag["from"][[1]])
-                        tom <- XML::xmlValue(uppdrag["tom"][[1]])
+                        intressent <- xmlValue(uppdrag["intressent_id"][[1]])
+                        uppgift  <- xmlValue(uppdrag["uppgift"][[1]])
+                        roll_kod  <- xmlValue(uppdrag["roll_kod"][[1]])
+                        status <- xmlValue(uppdrag["status"][[1]])
+                        from <- xmlValue(uppdrag["from"][[1]])
+                        tom <- xmlValue(uppdrag["tom"][[1]])
                         c(id=intressent,Organ=uppgift,Roll=roll_kod,status=status,From=from,Tom=tom)
                       }
                     }
@@ -116,7 +161,3 @@ csv_file <- csv_file[,c("rm","intressent_id","rost","avser","dok_id")]
 create_database(appointment,person_data_frame,csv_file)
 #csv_get<- read.csv(file = "~/R Packages/lab5/Data/voting.csv" , header=TRUE, sep=",")[,excluded_header]
 }
-
-
-
-#print(content_data_frame)
