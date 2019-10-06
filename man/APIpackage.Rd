@@ -2,22 +2,33 @@
 % Please edit documentation in R/APIPackage.R
 \name{APIpackage}
 \alias{APIpackage}
+\alias{get_mem}
 \alias{create_database}
 \title{API to get data from Swedish Parliment open Data site}
 \usage{
-create_database(appointment, person_data_frame, csv_file)
+\\method{create_database}(appointment,person_data_frame,csv_file) {}
 }
 \arguments{
+\item{county}{county of the members}
+
 \item{appointment}{member appointments}
 
 \item{person_data_frame}{member information}
 
 \item{csv_file}{voting information of members}
+
+\item{id}{member id}
 }
 \value{
 it will fetch the data from API URL, parse it according the requirement and send to create_database function to insert into database
 
 it is create the database and insert the data passed as arguments into tables
+
+this function will return the members of parliment. if specific country is given then it will return member only from this country otherwise all parliment member
+
+It will return member appoinments data according to the county or member is or both
+
+this function will return the gender presence in each county
 }
 \description{
 API to get data from Swedish Parliment open Data site
@@ -30,4 +41,16 @@ data_fetch()
 \dontrun{
 create_database(appointment,person_data_frame,csv_file)
 }
+\dontrun{
+get_mem("")
+}
+
+\dontrun{
+get_memdata("","")
+}
+
+\dontrun{
+get_genderdata("")
+}
+
 }

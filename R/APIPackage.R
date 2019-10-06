@@ -1,6 +1,9 @@
 ##' @name APIpackage
 ##' @aliases create_database
 ##' @aliases data_fetch
+##' @aliases get_mem
+##' @aliases get_memdata
+##' @aliases get_genderdata
 ##'
 ##' @title API to get data from Swedish Parliment open Data site
 ##'   
@@ -16,11 +19,72 @@
 ##' @param appointment member appointments
 ##' @param person_data_frame member information
 ##' @param csv_file voting information of members
+##' @usage\\method{create_database}(appointment,person_data_frame,csv_file) {}
 ##' @examples
 ##' \dontrun{
 ##' create_database(appointment,person_data_frame,csv_file)
 ##' }
+##' @rdname get_mem
+##' @return  this function will return the members of parliment. if specific country is given then it will return member only from this country otherwise all parliment member
+##' @param county county of the members
+##' @examples
+##' \dontrun{
+##' get_mem("")
+##' }
+##' 
+##' @rdname get_memdata
+##' @return  It will return member appoinments data according to the county or member is or both
+##' @param id member id
+##' @examples
+##' \dontrun{
+##' get_memdata("","")
+##' }
+##' 
+##' @rdname get_genderdata
+##' @return  this function will return the gender presence in each county
+##' @examples
+##' \dontrun{
+##' get_genderdata("")
+##' }
+##' 
+##' @import DBI
+##' @import RSQLite
+##' @import httr
+##' @imppor XML
 
+
+get_mem <- function(county){
+  
+  
+  con_str <- "~/R Packages/lab5/DatabaseDir/parliment_database.sqlite"
+  #con_str <-"https://github.com/Mahmood1s/lab5/blob/master/DatabaseDir/parliment_database.sqlite"
+  
+  my_database = dbConnect(SQLite(), dbname=con_str)
+  query <- paste("select intressent_id , (efternamn||","' ","'","||tilltalsnamn) as 'Member Name',valkrets from members where valkrets like '%","%'")
+  
+  member <- dbGetQuery(my_database,query)
+  dbDisconnect(my_database)
+  return (member)
+}
+
+get_memdata <- function(id,county){
+  
+  con_str <- "~/R Packages/lab5/DatabaseDir/parliment_database.sqlite"
+  my_database = dbConnect(SQLite(), dbname=con_str)
+  query <- paste("select a.Organ, a.Roll, a.Status,a.[From],a.Tom from members as m inner join appointments as a on m.intressent_id = a.id where a.id like '%",id,"%' and m.valkrets like '%",county,"%'",sep = "")
+  member <- dbGetQuery(my_database,query)
+  dbDisconnect(my_database)
+  return (member)
+}
+
+get_genderdata <- function(county){
+  con_str <- "~/R Packages/lab5/DatabaseDir/parliment_database.sqlite"
+  my_database = dbConnect(SQLite(), dbname=con_str)
+  query <- paste("select valkrets,kon from members where valkrets !='' and valkrets like'%",county,"%'",sep = "")
+  participation <- dbGetQuery(my_database,query)
+  dbDisconnect(my_database)
+  return (participation)
+}
 
 create_database<-function(appointment,person_data_frame,csv_file){
   
@@ -165,7 +229,7 @@ csv_file <- csv_file[,c("rm","intressent_id","rost","avser","dok_id")]
 
 status <- create_database(appointment,person_data_frame,csv_file)
 #csv_get<- read.csv(file = "~/R Packages/lab5/Data/voting.csv" , header=TRUE, sep=",")[,excluded_header]
-print(class(status))
+
 return(status)
 }
 
