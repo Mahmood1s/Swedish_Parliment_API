@@ -1,0 +1,29 @@
+---
+title: "API to database Package"
+author: "Mahmood Siddique"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{API to database Package}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## **What Package is Doing**
+
+This package is importing data from the API (Swedish Parliment Open Data) and after parsing data insert this data into database created by the package. This package includes two functions data_fetch and create_database. data_fetch is fetching the data from API in XML and CSV formate and after parsing the getting required data, it is passing this data to create_database function, which is then inserting the data into members, appointments and voting tables of the parliment_database.
+
+# **The function create_database()**
+
+This function is creating database with three tables members, appointments and voting. This function is called from data_fetch() function and have three arguments. which are dataframes and hold data of the members, their appoints during their tenure and their voting states on the laws presented in perliment.
+
+# **The function data_fetch()**
+
+This function has two API calls, in this call it fetches data from API in XML formate. this XML contain the data of the members and their appointments. function then parse this XML file and get the personal data of the member like their parties, name, member id etc and their appointments data which is linked on their member ids. then in second API call function gets a CSV file of the voting information. function converts all this required data into dataframes and then pass these dataframe to create_database function. 

@@ -1,5 +1,4 @@
 ##' @name APIpackage
-##' @aliases required_packages
 ##' @aliases create_database
 ##' @aliases data_fetch
 ##'
@@ -10,14 +9,6 @@
 ##' @examples
 ##' \dontrun{
 ##' data_fetch()
-##' }
-##'
-##' @rdname required_packages
-##' @return  installs required packages for this package
-##' @examples
-##' \dontrun{
-##' install.packages("httr")
-##' install.packages("dplyr")
 ##' }
 ##'
 ##' @rdname create_database
@@ -31,80 +22,94 @@
 ##' }
 
 
-  # if(requireNamespace("httr",quietly = TRUE))
-  # {
-  #   install.packages("httr")
-  #   require("httr")
-  # }
-  # if(requireNamespace("dplyr",quietly = TRUE)){
-  #   install.packages("dplyr")  
-  #   require(dplyr)
-  # }
-  # 
-  # if(requireNamespace("dbplyr",quietly = TRUE)){
-  #   install.packages("dbplyr")  
-  #   require(dbplyr)
-  # }
-  # 
-  # if(requireNamespace("XML",quietly = TRUE)){
-  #   install.packages("XML")
-  #   require("XML")
-  # }
-  # if(requireNamespace("methods",quietly = TRUE)){
-  #   require("methods")
-  # }
-  # if(requireNamespace("RSQLite",quietly = TRUE)){
-  #   require(RSQLite)
-  # }
-
 create_database<-function(appointment,person_data_frame,csv_file){
   
   my_db_file<-"~/R Packages/lab5/DatabaseDir/parliment_database.sqlite"
-  my_database = dbConnect(SQLite(), dbname=my_db_file)  
-#  dbSendQuery(conn=my_database,
-#              "CREATE TABLE members(
-#                intressent_id TEXT,
-#                efternamn TEXT,
-#                tilltalsnamn TEXT,
-#                parti TEXT,
-#                kon TEXT,
-#                valkrets TEXT,
-#                fodd_ar INT,
-#                status TEXT,
-#                PRIMARY KEY (intressent_id))
-#              ")
- # dbSendQuery(conn=my_database,
- #             "CREATE TABLE appointments(
- #               intressent_id TEXT,
- #               uppgift TEXT,
- #               roll_kod TEXT,
- #               status TEXT,
- #               from DATETIME,
- #               tom DATETIME,
- #               PRIMARY KEY (member_id))
- #             ")
- #  
-   #  dbSendQuery(conn=my_database,
-   #              "CREATE TABLE voting(
-   #                rm TEXT,
-   #                intressent_id INT,
-   #                rost TEXT,
-   #                avser TEXT,
-   #                dok_id TEXT)
-   #              ")
-   # dbSendQuery(conn=my_database,
-   #             "DROP TABLE voting")
+  my_database = dbConnect(SQLite(), dbname=my_db_file) 
   
-  dbWriteTable(conn=my_database, name="members", person_data_frame,append=T, row.names=F)
-  dbWriteTable(conn=my_database, name="appointments", appointment,append=T, row.names=F)
-  dbWriteTable(conn=my_database, name="voting", csv_file,append=T, row.names=F)
-  # dbListTables(my_database)
+  rs <- dbSendQuery(my_database,"SELECT name FROM sqlite_master WHERE type='table' and name ='members'")
+  query_member <-dbFetch(rs)
+  dbClearResult(rs)
+  rs <- dbSendQuery(my_database,"SELECT name FROM sqlite_master WHERE type='table' and name ='appointments'")
+  query_appoint <- dbFetch(rs)
+  dbClearResult(rs)
+  rs <- dbSendQuery(my_database,"SELECT name FROM sqlite_master WHERE type='table' and name ='voting'")
+  query_voting <- dbFetch(rs)
+  dbClearResult(rs)
+  
+  if(length(query_member[,1]>0))
+  {
+    dbSendQuery(conn=my_database,"delete from members")
+  }
+  else 
+  {
+     dbSendQuery(conn=my_database,
+                 "CREATE TABLE members(
+                   intressent_id TEXT,
+                   efternamn TEXT,
+                   tilltalsnamn TEXT,
+                   parti TEXT,
+                   kon TEXT,
+                   valkrets TEXT,
+                   fodd_ar INT,
+                   status TEXT,
+                   PRIMARY KEY (intressent_id))
+                 ")
+  }
+ 
+  if(length(query_appoint[,1]>0))
+  {
+    dbSendQuery(conn=my_database,"delete from appointments")
+  }
+  else 
+  {
+    dbSendQuery(conn=my_database,
+                "CREATE TABLE appointments(
+                  intressent_id TEXT,
+                  uppgift TEXT,
+                  roll_kod TEXT,
+                  status TEXT,
+                  from DATETIME,
+                  tom DATETIME,
+                  PRIMARY KEY (member_id))
+                ")
+  }
+  
+  if(length(query_voting[,1]>0))
+  {
+    dbSendQuery(conn=my_database,"delete from voting")
+  }
+  else 
+  { 
+    dbSendQuery(conn=my_database,
+                "CREATE TABLE voting(
+                  rm TEXT,
+                  intressent_id INT,
+                  rost TEXT,
+                  avser TEXT,
+                  dok_id TEXT)
+                ")
+  }
+
+  
+  member_status <- dbWriteTable(conn=my_database, name="members", person_data_frame,append=T, row.names=F)
+  appointments_status <- dbWriteTable(conn=my_database, name="appointments", appointment,append=T, row.names=F)
+  voting_status <- dbWriteTable(conn=my_database, name="voting", csv_file,append=T, row.names=F)
+  
+  dbDisconnect(my_database)
+  
+  if(member_status==TRUE & voting_status==TRUE & appointments_status==TRUE)
+    return(TRUE)
+  else
+    return(FALSE)
+  
+   # dbListTables(my_database)
   #dbListFields(db, "members")
   # my_database<- src_sqlite(my_db_file,create = TRUE)
   #copy_to(my_database,df = appointment)
   #copy_to(my_database,df = person_data_frame)
   #copy_to(my_database,df = csv_file)
-  
+
 }
 
 data_fetch<-function(){
@@ -158,6 +163,10 @@ csv_file <- csv_file[,c("rm","intressent_id","rost","avser","dok_id")]
 
 #save(csv_file,file = "~/R Packages/lab5/Data/voting.Rda")
 
-create_database(appointment,person_data_frame,csv_file)
+status <- create_database(appointment,person_data_frame,csv_file)
 #csv_get<- read.csv(file = "~/R Packages/lab5/Data/voting.csv" , header=TRUE, sep=",")[,excluded_header]
+print(class(status))
+return(status)
 }
+
+

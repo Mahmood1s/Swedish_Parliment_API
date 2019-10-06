@@ -3,7 +3,6 @@
 \name{APIpackage}
 \alias{APIpackage}
 \alias{create_database}
-\alias{required_packages}
 \title{API to get data from Swedish Parliment open Data site}
 \usage{
 create_database(appointment, person_data_frame, csv_file)
@@ -18,8 +17,6 @@ create_database(appointment, person_data_frame, csv_file)
 \value{
 it will fetch the data from API URL, parse it according the requirement and send to create_database function to insert into database
 
-installs required packages for this package
-
 it is create the database and insert the data passed as arguments into tables
 }
 \description{
@@ -28,11 +25,6 @@ API to get data from Swedish Parliment open Data site
 \examples{
 \dontrun{
 data_fetch()
-}
-
-\dontrun{
-install.packages("httr")
-install.packages("dplyr")
 }
 
 \dontrun{
