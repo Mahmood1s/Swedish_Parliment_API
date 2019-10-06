@@ -3,26 +3,18 @@
 \name{APIpackage}
 \alias{APIpackage}
 \alias{get_mem}
-\alias{create_database}
+\alias{data_fetch}
 \title{API to get data from Swedish Parliment open Data site}
 \usage{
-\\method{create_database}(appointment,person_data_frame,csv_file) {}
+get_mem(county)
 }
 \arguments{
 \item{county}{county of the members}
-
-\item{appointment}{member appointments}
-
-\item{person_data_frame}{member information}
-
-\item{csv_file}{voting information of members}
 
 \item{id}{member id}
 }
 \value{
 it will fetch the data from API URL, parse it according the requirement and send to create_database function to insert into database
-
-it is create the database and insert the data passed as arguments into tables
 
 this function will return the members of parliment. if specific country is given then it will return member only from this country otherwise all parliment member
 
@@ -39,9 +31,6 @@ data_fetch()
 }
 
 \dontrun{
-create_database(appointment,person_data_frame,csv_file)
-}
-\dontrun{
 get_mem("")
 }
 
@@ -50,7 +39,8 @@ get_memdata("","")
 }
 
 \dontrun{
-get_genderdata("")
+a = get_genderdata("")
+a
 }
 
 }

@@ -1,5 +1,4 @@
 ##' @name APIpackage
-##' @aliases create_database
 ##' @aliases data_fetch
 ##' @aliases get_mem
 ##' @aliases get_memdata
@@ -14,16 +13,6 @@
 ##' data_fetch()
 ##' }
 ##'
-##' @rdname create_database
-##' @return  it is create the database and insert the data passed as arguments into tables
-##' @param appointment member appointments
-##' @param person_data_frame member information
-##' @param csv_file voting information of members
-##' @usage\\method{create_database}(appointment,person_data_frame,csv_file) {}
-##' @examples
-##' \dontrun{
-##' create_database(appointment,person_data_frame,csv_file)
-##' }
 ##' @rdname get_mem
 ##' @return  this function will return the members of parliment. if specific country is given then it will return member only from this country otherwise all parliment member
 ##' @param county county of the members
@@ -44,13 +33,14 @@
 ##' @return  this function will return the gender presence in each county
 ##' @examples
 ##' \dontrun{
-##' get_genderdata("")
+##' a = get_genderdata("")
+##' a
 ##' }
 ##' 
 ##' @import DBI
 ##' @import RSQLite
 ##' @import httr
-##' @imppor XML
+##' @import XML
 
 
 get_mem <- function(county){

@@ -43,16 +43,16 @@ DBI::dbDisconnect(my_database)
 
 test_that("Error messages are returned for erronous input to create_database function.", {
 
- # expect_error(create_database(wrong_members, wrong_appointments,wrong_voting))
-  #expect_error(create_database(wrong_voting))
-  #expect_error(create_database(c(1,2,3,4)))
+  expect_error(create_database(wrong_members, wrong_appointments,wrong_voting))
+  expect_error(create_database(wrong_voting))
+  expect_error(create_database(c(1,2,3,4)))
   expect_error(get_genderdata(c(1,2,3,4)))
-  #expect_error(create_database(wrong_members,wrong_appointments,c("wrong input")))
+  expect_error(create_database(wrong_members,wrong_appointments,c("wrong input")))
 })
 
 test_that("Function is correct", {
- # obj <- create_database(appointments_data_frame,member_data_frame,voting_data_frame)
-  #expect_true(obj == "TRUE")
+  obj <- create_database(appointments_data_frame,member_data_frame,voting_data_frame)
+  expect_true(obj == "TRUE")
   obj <- get_memdata("id","")
   expect_true(length(obj[,1]) == 0)
   obj <- get_memdata("0390912778804","")
@@ -61,8 +61,8 @@ test_that("Function is correct", {
 })
 
 test_that("inputs are correct create_database/get_member function.", {
- # expected_obj <- TRUE
+  expected_obj <- TRUE
   output_df <-c("Riksdagsledamot")
-#  expect_equal(create_database(appointments_data_frame,member_data_frame,voting_data_frame), expected_obj)
+  expect_equal(create_database(appointments_data_frame,member_data_frame,voting_data_frame), expected_obj)
   expect_equal(get_memdata("0390912778804","")[1,2],output_df[1])
 })
