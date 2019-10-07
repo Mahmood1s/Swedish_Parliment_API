@@ -14,8 +14,6 @@ get_mem(county)
 \item{id}{member id}
 }
 \value{
-it will fetch the data from API URL, parse it according the requirement and send to create_database function to insert into database
-
 this function will return the members of parliment. if specific country is given then it will return member only from this country otherwise all parliment member
 
 It will return member appoinments data according to the county or member is or both
@@ -39,8 +37,7 @@ get_memdata("","")
 }
 
 \dontrun{
-a = get_genderdata("")
-a
+get_genderdata("")
 }
 
 }

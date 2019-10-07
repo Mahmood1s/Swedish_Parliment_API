@@ -6,8 +6,10 @@
 ##'
 ##' @title API to get data from Swedish Parliment open Data site
 ##'   
+##' @param county county of the members
+##' @param id member id
 ##' @rdname APIpackage
-##' @return  it will fetch the data from API URL, parse it according the requirement and send to create_database function to insert into database
+##' @describeIn it will fetch the data from API URL, parse it according the requirement and send to create_database function to insert into database
 ##' @examples
 ##' \dontrun{
 ##' data_fetch()
@@ -15,7 +17,6 @@
 ##'
 ##' @rdname get_mem
 ##' @return  this function will return the members of parliment. if specific country is given then it will return member only from this country otherwise all parliment member
-##' @param county county of the members
 ##' @examples
 ##' \dontrun{
 ##' get_mem("")
@@ -23,7 +24,7 @@
 ##' 
 ##' @rdname get_memdata
 ##' @return  It will return member appoinments data according to the county or member is or both
-##' @param id member id
+
 ##' @examples
 ##' \dontrun{
 ##' get_memdata("","")
@@ -33,14 +34,18 @@
 ##' @return  this function will return the gender presence in each county
 ##' @examples
 ##' \dontrun{
-##' a = get_genderdata("")
-##' a
+##' get_genderdata("")
 ##' }
 ##' 
 ##' @import DBI
 ##' @import RSQLite
 ##' @import httr
 ##' @import XML
+##' @export get_mem
+##' @export get_memdata
+##' @export get_genderdata
+##' @export create_database
+##' @export data_fetch
 
 
 get_mem <- function(county){
